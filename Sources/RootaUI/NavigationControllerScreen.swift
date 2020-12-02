@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import PromiseKit
 import Roota
 
 public class NavigationControllerScreen<Root: Screen & UIViewController>: UINavigationController, SequentialScreen where Root.Routing: ScreenRouting<Root> {

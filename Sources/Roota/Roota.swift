@@ -8,7 +8,7 @@
 import Foundation
 
 public enum Roota {
-    static var logHandler: ((_ message: @autoclosure @escaping () -> String, _ functionName: StaticString, _ fileName: StaticString, _ lineNumber: Int, _ dso: UnsafeRawPointer) -> Void) = { message, _, _, _, _ in
+    public static var logHandler: ((_ message: @autoclosure @escaping () -> String, _ functionName: StaticString, _ fileName: StaticString, _ lineNumber: Int, _ dso: UnsafeRawPointer) -> Void) = { message, _, _, _, _ in
         NSLog("[Roota] %@", message())
     }
 

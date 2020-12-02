@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import PromiseKit
 import Roota
 
 public class TabBarControllerScreen3<First: Screen & UIViewController, Second: Screen & UIViewController, Third: Screen & UIViewController>: UITabBarController, SwitchingScreen where First.Routing: ScreenRouting<First>, Second.Routing: ScreenRouting<Second>, Third.Routing: ScreenRouting<Third> {
