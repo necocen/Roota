@@ -12,9 +12,10 @@ import RootaUI // Required to give default implementations to UIViewController.
 
 class RootViewController: UIViewController, Screen {
     class Routing: ScreenRouting<RootViewController> {
+        // Defining available routes:
         @Route(.present) var modal: ModalViewController.Routing
         @Route(.present) var another: AnotherViewController.Routing
-
+        // Defining how to instantiate:
         override func screen() -> RootViewController {
             return RootViewController()
         }
@@ -22,8 +23,9 @@ class RootViewController: UIViewController, Screen {
 }
 
 class ModalViewController: UIViewController, Screen {
-    @Route(.present) var grandchild: GrandchildViewController.Routing
     class Routing: ScreenRouting<ModalViewController> {
+        @Route(.present) var grandchild: GrandchildViewController.Routing
+
         override func screen() -> ModalViewController {
             return ModalViewController()
         }
