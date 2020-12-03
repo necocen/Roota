@@ -27,6 +27,10 @@ public extension SequentialScreen where Self: UINavigationController {
         }
     }
 
+    func pop() -> Guarantee<Void> {
+        return guaranteePopViewController(animated: true)
+    }
+
     var screens: [ScreenProtocol] {
         return viewControllers.compactMap { $0 as? ScreenProtocol }
     }
@@ -40,6 +44,17 @@ extension UINavigationController {
             return Guarantee { seal in DispatchQueue.main.async { seal(()) } }
         }
         return Guarantee<Void> { seal in coordinator.animate(alongsideTransition: nil, completion: { _ in seal(()) }) }
+    }
+
+    func guaranteePopViewController(animated: Bool) -> Guarantee<Void> {
+        popViewController(animated: animated)
+        guard let coordinator = transitionCoordinator, animated else {
+            // 一度asyncしないとviewControllersが正しい状態にならない
+            return Guarantee { seal in DispatchQueue.main.async { seal(()) } }
+        }
+        return Guarantee<Void> { seal in
+            coordinator.animate(alongsideTransition: nil, completion: { _ in seal(()) })
+        }
     }
 
     func guaranteePopToViewController(_ viewController: UIViewController, animated: Bool) -> Guarantee<Void> {

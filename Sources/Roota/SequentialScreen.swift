@@ -9,6 +9,7 @@ import PromiseKit
 
 public protocol SequentialScreenProtocol: ScreenProtocol {
     func push(_ screen: ScreenProtocol) -> Guarantee<Void>
+    func pop() -> Guarantee<Void>
     func pop(to screen: ScreenProtocol) -> Guarantee<Void>
     var screens: [ScreenProtocol] { get }
 }
@@ -16,17 +17,19 @@ public protocol SequentialScreenProtocol: ScreenProtocol {
 public protocol SequentialScreen: Screen, SequentialScreenProtocol {}
 
 public extension SequentialScreen {
-    func handleRouting(_ routing: RoutingProtocol) -> Guarantee<Void> {
+    func handleRouting<Routing: ScreenRoutingProtocol>(_ routing: Routing) -> Guarantee<Routing.Screen> {
         Roota.log("Handle \(routing)")
         // 自分自身へのルーティングを受けたときは、何かモーダルが出ていれば閉じ、そうでなければ何もしない
         if self.routing.isEquivalent(to: routing) {
             Roota.log("Route to self")
             if presentedScreen != nil {
                 Roota.log("Dismiss presentedScreen \(type(of: presentedScreen!))")
-                return dismissScreen(animated: false)
+                // swiftlint:disable:next force_cast
+                return dismissScreen(animated: false).map { _ in self as! Routing.Screen }
             } else {
                 Roota.log("Do nothing")
-                return .value
+                // swiftlint:disable:next force_cast
+                return .value(routing as! Routing.Screen)
             }
         } else if !self.routing.isEquivalentToOrAncestor(of: routing) {
             if self.routing.hasCommonAncestor(with: routing) {

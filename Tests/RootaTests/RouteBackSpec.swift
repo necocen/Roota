@@ -1,10 +1,17 @@
+//
+//  RouteBackSpec.swift
+//  RootaTests
+//
+//  Created by necocen on 2020/12/03.
+//
+
 import XCTest
 import Nimble
 import PromiseKit
 import Quick
 import Roota
 
-class RoutingSpec: QuickSpec {
+class RouteBackSpec: QuickSpec {
     class ViewControllerA: ViewController, Screen {
         class Routing: ScreenRouting<ViewControllerA> {
             @Route(.push) var b1: ViewControllerB1.Routing
@@ -105,18 +112,17 @@ class RoutingSpec: QuickSpec {
     }
 
     override func spec() {
-        describe("UIViewController") {
+        describe("ViewController") {
             var vc: ViewControllerD!
             beforeEach {
                 vc = ViewControllerD.asRootScreen()
             }
 
-            it("モーダルViewControllerをpresent/dismissすること") {
-                let root = vc.routing
+            it("dismisses presented ViewController") {
                 waitUntil(timeout: .seconds(10)) { done in
-                    vc.route(to: \.modal).then { _ -> Guarantee<ViewControllerD> in
+                    vc.route(to: \.modal).then { m -> Guarantee<ScreenProtocol> in
                         expect(vc.presentedViewController).to(beAnInstanceOf(ViewControllerM.self))
-                        return vc.route(to: root)
+                        return m.routeBack()
                     }.done { _ in
                         expect(vc.presentedViewController).to(beNil())
                         done()

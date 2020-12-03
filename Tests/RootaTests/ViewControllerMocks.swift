@@ -100,6 +100,11 @@ extension SequentialScreen where Self: NavigationController {
         }
     }
 
+    func pop() -> Guarantee<Void> {
+        guard screens.count > 1 else { fatalError("Can't pop") }
+        return pop(to: screens[screens.count - 2])
+    }
+
     func pop(to screen: ScreenProtocol) -> Guarantee<Void> {
         guard let viewController = screen as? ViewController else { fatalError("Not ViewController") }
         return after(seconds: animationDuration).done { _ in

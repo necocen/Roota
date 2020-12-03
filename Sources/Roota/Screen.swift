@@ -8,7 +8,8 @@
 import PromiseKit
 
 public protocol ScreenProtocol: class {
-    func handleRouting(_ routing: RoutingProtocol) -> Guarantee<Void>
+    func handleRouting<Routing: ScreenRoutingProtocol>(_ routing: Routing) -> Guarantee<Routing.Screen>
+    func routeBack() -> Guarantee<ScreenProtocol>
     func anyRouting() -> RoutingProtocol
     func presentScreen(_ screen: ScreenProtocol, animated: Bool) -> Guarantee<Void>
     func dismissScreen(animated: Bool) -> Guarantee<Void>
@@ -28,38 +29,38 @@ public extension Screen {
         return routing
     }
 
-    func ancestor<Parent: Screen, Routing: RoutingProtocol>(_ parent: Parent.Type, _ keyPath: KeyPath<Parent.Routing, Routing>) -> Routing {
+    func ancestor<Parent: Screen, Routing: ScreenRoutingProtocol>(_ parent: Parent.Type, _ keyPath: KeyPath<Parent.Routing, Routing>) -> Routing {
         guard let ancestor = routing.ancestors.compactMap({ $0 as? Parent.Routing }).last else {
             fatalError("親が存在しない")
         }
         return ancestor[keyPath: keyPath]
     }
 
-    func descendant<Routing: RoutingProtocol>(_ keyPath: KeyPath<Self.Routing, Routing>) -> Routing {
+    func descendant<Routing: ScreenRoutingProtocol>(_ keyPath: KeyPath<Self.Routing, Routing>) -> Routing {
         return routing[keyPath: keyPath]
     }
 
-    @discardableResult func route<Routing: RoutingProtocol>(to routing: Routing) -> Guarantee<Void> {
+    @discardableResult func route<Routing: ScreenRoutingProtocol>(to routing: Routing) -> Guarantee<Routing.Screen> {
         return handleRouting(routing)
     }
 
-    @discardableResult func route<Routing: RoutingProtocol>(to keyPath: KeyPath<Self.Routing, Routing>) -> Guarantee<Void> {
+    @discardableResult func route<Routing: ScreenRoutingProtocol>(to keyPath: KeyPath<Self.Routing, Routing>) -> Guarantee<Routing.Screen> {
         return handleRouting(routing[keyPath: keyPath])
     }
 
-    @discardableResult func route<Routing: RoutingProtocol, T>(to keyPath: KeyPath<Self.Routing, Routing>,
-                                                               with keyPath1: WritableKeyPath<Routing, T>,
-                                                               _ value1: T) -> Guarantee<Void> {
+    @discardableResult func route<Routing: ScreenRoutingProtocol, T>(to keyPath: KeyPath<Self.Routing, Routing>,
+                                                                     with keyPath1: WritableKeyPath<Routing, T>,
+                                                                     _ value1: T) -> Guarantee<Routing.Screen> {
         var child = routing[keyPath: keyPath]
         child[keyPath: keyPath1] = value1
         return handleRouting(child)
     }
 
-    @discardableResult func route<Routing: RoutingProtocol, T, U>(to keyPath: KeyPath<Self.Routing, Routing>,
-                                                                  with keyPath1: WritableKeyPath<Routing, T>,
-                                                                  _ value1: T,
-                                                                  _ keyPath2: WritableKeyPath<Routing, U>,
-                                                                  _ value2: U) -> Guarantee<Void> {
+    @discardableResult func route<Routing: ScreenRoutingProtocol, T, U>(to keyPath: KeyPath<Self.Routing, Routing>,
+                                                                        with keyPath1: WritableKeyPath<Routing, T>,
+                                                                        _ value1: T,
+                                                                        _ keyPath2: WritableKeyPath<Routing, U>,
+                                                                        _ value2: U) -> Guarantee<Routing.Screen> {
         var child = routing[keyPath: keyPath]
         child[keyPath: keyPath1] = value1
         child[keyPath: keyPath2] = value2
@@ -67,11 +68,11 @@ public extension Screen {
     }
 
     // swiftlint:disable:next function_parameter_count
-    @discardableResult func route<Routing: RoutingProtocol, T, U, V>(to keyPath: KeyPath<Self.Routing, Routing>,
-                                                                     with keyPath1: WritableKeyPath<Routing, T>,
-                                                                     _ value1: T, _ keyPath2: WritableKeyPath<Routing, U>,
-                                                                     _ value2: U, _ keyPath3: WritableKeyPath<Routing, V>,
-                                                                     _ value3: V) -> Guarantee<Void> {
+    @discardableResult func route<Routing: ScreenRoutingProtocol, T, U, V>(to keyPath: KeyPath<Self.Routing, Routing>,
+                                                                           with keyPath1: WritableKeyPath<Routing, T>,
+                                                                           _ value1: T, _ keyPath2: WritableKeyPath<Routing, U>,
+                                                                           _ value2: U, _ keyPath3: WritableKeyPath<Routing, V>,
+                                                                           _ value3: V) -> Guarantee<Routing.Screen> {
         var child = routing[keyPath: keyPath]
         child[keyPath: keyPath1] = value1
         child[keyPath: keyPath2] = value2
@@ -79,44 +80,61 @@ public extension Screen {
         return handleRouting(child)
     }
 
-    @discardableResult func route<From: Screen, Routing: RoutingProtocol>(from: From.Type,
-                                                                          to keyPath: KeyPath<From.Routing, Routing>) -> Guarantee<Void> {
+    @discardableResult func route<From: Screen,
+        Routing: ScreenRoutingProtocol>(from: From.Type,
+                                        to keyPath: KeyPath<From.Routing, Routing>) -> Guarantee<Routing.Screen> {
         return handleRouting(ancestor(from, keyPath))
     }
 
-    @discardableResult func route<From: Screen, Routing: RoutingProtocol, T>(from: From.Type,
-                                                                             to keyPath: KeyPath<From.Routing, Routing>,
-                                                                             with keyPath1: WritableKeyPath<Routing, T>,
-                                                                             _ value1: T) -> Guarantee<Void> {
+    @discardableResult func route<From: Screen, Routing: ScreenRoutingProtocol, T>(from: From.Type,
+                                                                                   to keyPath: KeyPath<From.Routing, Routing>,
+                                                                                   with keyPath1: WritableKeyPath<Routing, T>,
+                                                                                   _ value1: T) -> Guarantee<Routing.Screen> {
         var ancestor = self.ancestor(from, keyPath)
         ancestor[keyPath: keyPath1] = value1
         return handleRouting(ancestor)
     }
 
-    @discardableResult func routeBack() -> Guarantee<Void> {
-        guard let parent = routing.ancestors.last else { fatalError("This is root screen") }
-        return handleRouting(parent)
-    }
-
     static func asRootScreen() -> Self {
-        let routing = Routing(type: .root, ancestors: [])
+        let routing = Routing()
         let screen = routing.anyInstantiate() as! Self // swiftlint:disable:this force_cast
         screen.routing = routing
         return screen
     }
 
+    @discardableResult func routeBack() -> Guarantee<ScreenProtocol> {
+        switch routing.type {
+        case .present:
+            guard let parentScreen = parentScreen else { fatalError("Inconsistent routing") }
+            return parentScreen.dismissScreen(animated: true).map { _ in parentScreen }
+        case .push:
+            guard let navigationScreen = navigationScreen else { fatalError("Inconsistent routing") }
+            return navigationScreen.pop().map { _ in navigationScreen.screens.last! }
+        case .root:
+            guard let navigationScreen = navigationScreen else { fatalError("Inconsistent routing") }
+            return navigationScreen.routeBack()
+        case .switch, .embed:
+            guard let parentScreen = parentScreen else { fatalError("Inconsistent routing") }
+            return parentScreen.routeBack()
+        case nil:
+            fatalError("Can't route back from Root screen.")
+        }
+    }
+
     // swiftlint:disable:next function_body_length
-    func handleRouting(_ routing: RoutingProtocol) -> Guarantee<Void> {
+    func handleRouting<Routing: ScreenRoutingProtocol>(_ routing: Routing) -> Guarantee<Routing.Screen> {
         Roota.log("Handle \(routing)")
         // 自分自身へのルーティングを受けたときは、何かモーダルが出ていれば閉じ、そうでなければ何もしない
         if self.routing.isEquivalent(to: routing) {
             Roota.log("Route to self")
             if presentedScreen != nil {
                 Roota.log("Dismiss presentedScreen \(type(of: presentedScreen!))")
-                return dismissScreen(animated: false)
+                // swiftlint:disable:next force_cast
+                return dismissScreen(animated: true).map { _ in self as! Routing.Screen }
             } else {
                 Roota.log("Do nothing")
-                return .value
+                // swiftlint:disable:next force_cast
+                return .value(self as! Routing.Screen)
             }
         } else if !self.routing.isEquivalentToOrAncestor(of: routing) {
             if self.routing.hasCommonAncestor(with: routing) {
@@ -170,7 +188,7 @@ public extension Screen {
             } else {
                 fatalError("Any children can not handle given routing")
             }
-        case .root, .switch:
+        case .root, .switch, nil:
             fatalError("Unexpected routing")
         }
     }

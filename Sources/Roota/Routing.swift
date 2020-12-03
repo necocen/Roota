@@ -8,9 +8,10 @@
 public typealias _Screen = Screen
 
 public protocol RoutingProtocol: class {
+    init()
     init(type: RoutingType, ancestors: [RoutingProtocol])
     var ancestors: [RoutingProtocol] { get }
-    var type: RoutingType { get }
+    var type: RoutingType? { get }
     func anyInstantiate() -> ScreenProtocol
     func isEqual(to another: RoutingProtocol) -> Bool
 }
@@ -104,8 +105,16 @@ public extension RoutingProtocol {
 
 open class ScreenRouting<Screen: _Screen>: ScreenRoutingProtocol {
     open func screen() -> Screen { fatalError("Override me") }
-    public let type: RoutingType
+    public let type: RoutingType?
     public private(set) var ancestors: [RoutingProtocol]
+    public required init() {
+        self.ancestors = []
+        self.type = nil
+        for case (_, let route as RouteProtocol) in Mirror(reflecting: self).children {
+            route.configure(self)
+        }
+    }
+
     public required init(type: RoutingType, ancestors: [RoutingProtocol]) {
         self.ancestors = ancestors
         self.type = type
