@@ -41,12 +41,19 @@ rootViewController.route(to: \.modal) // Presents ModalViewControler as modal.
 Moving to grandchild `Screen` is easy.
 
 ```swift
+// Presents ModalViewController, and then presents GrandchildViewController.
 rootViewController.route(to: \.modal.grandchild)
 ```
 
-`route(to:)` returns PromiseKit's `Guarantee<Void>` so that can be chained.
+`route(to:)` returns PromiseKit's `Guarantee<Screen>` so that can be chained.
 
 ```swift
-// Presents AnotherViewController, after presenting and dismissing ModalViewController.
-rootViewController.route(to: \.modal).then { _ in rootViewController.route(to: \.another) }
+// This line is equivalent to above example; presents ModalViewController and GrandchildViewController.
+rootViewController.route(to: \.modal).then { modal in modal.route(to: \.grandchild) }
+
+// You may need to specify return type explicitly (when your chaining function is not one-liner.)
+rootViewController.route(to: \.modal).then { modal -> Guarantee<GrandchildViewController> in
+    print(modal)
+    return modal.route(to: \.grandchild)
+}
 ```
