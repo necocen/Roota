@@ -1,0 +1,16 @@
+included:
+  - Sources
+  - Demo
+identifier_name:
+  excluded:
+    - vc
+  min_length:
+    error: 0
+type_name:
+  excluded:
+    - _Screen
+line_length: 150
+cyclomatic_complexity:
+  ignores_case_statements: true
+nesting:
+  type_level: 2

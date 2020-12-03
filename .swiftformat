@@ -1,0 +1,49 @@
+--allman false
+--binarygrouping none
+--closingparen balanced
+--commas always
+--conflictmarkers reject
+--decimalgrouping none
+--elseposition same-line
+--empty void
+--exponentcase lowercase
+--exponentgrouping disabled
+--fractiongrouping disabled
+--fragment false
+--header ignore
+--hexgrouping none
+--hexliteralcase uppercase
+--ifdef no-indent
+--indent 4
+--indentcase false
+--linebreaks lf
+--maxwidth none
+--nospaceoperators ..<,...
+--nowrapoperators
+--octalgrouping none
+--operatorfunc spaced
+--self init-only
+--selfrequired
+--semicolons inline
+--shortoptionals always
+--specifierorder
+--stripunusedargs closure-only
+--tabwidth unspecified
+--trailingclosures
+--trimwhitespace always
+--wraparguments after-first
+--wrapcollections before-first
+--wrapparameters after-first
+--xcodeindentation disabled
+
+--disable andOperator
+--disable anyObjectProtocol
+--disable blankLinesAtEndOfScope
+--disable blankLinesAtStartOfScope
+--disable fileHeader
+--disable hoistPatternLet
+--disable redundantReturn
+--disable sortedImports
+--disable trailingCommas
+--disable wrapMultilineStatementBraces
+--disable preferKeyPath

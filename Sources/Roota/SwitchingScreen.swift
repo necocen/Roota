@@ -1,6 +1,6 @@
 //
 //  SwitchingScreen.swift
-//  
+//
 //
 //  Created by necocen on 2020/12/02.
 //
@@ -77,4 +77,3 @@ public extension SwitchingScreen {
 
     }
 }
-

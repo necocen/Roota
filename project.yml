@@ -1,0 +1,102 @@
+name: Roota-Demo
+options:
+  bundleIdPrefix: info.necocen.Roota
+  deploymentTarget:
+    iOS: 13.0
+  defaultConfig: Release
+packages:
+  PromiseKit:
+    url: https://github.com/mxcl/PromiseKit
+    from: 6.13.3
+  Nimble:
+    url: https://github.com/Quick/Nimble
+    from: 9.0.0
+  Quick:
+    url: https://github.com/Quick/Quick
+    from: 3.0.0
+configs:
+  Debug: debug
+  Release: release
+targets:
+  Demo:
+    type: application
+    platform: iOS
+    sources:
+      - Demo
+      - path: README.md
+        buildPhase: none
+    dependencies:
+      - target: Roota
+      - target: RootaUI
+    preBuildScripts:
+      - script: mint run swiftformat .
+        name: Format
+        inputFiles:
+          - $(SRCROOT)/**/*.swift
+      - script: mint run swiftlint
+        name: SwiftLint
+    settings:
+      base:
+        PRODUCT_NAME: Roota-Demo
+        DEFINES_MODULE: true
+        PRODUCT_MODULE_NAME: Demo
+  Roota:
+    type: framework
+    platform: iOS
+    sources:
+      - Sources/Roota
+    dependencies:
+      - package: PromiseKit
+  RootaUI:
+    type: framework
+    platform: iOS
+    sources:
+      - Sources/RootaUI
+    dependencies:
+      - target: Roota
+  RootaTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - Tests/RootaTests
+    dependencies:
+      - package: Quick
+      - package: Nimble
+      - target: Roota
+  RootaUITests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - Tests/RootaUITests
+    dependencies:
+      - package: Quick
+      - package: Nimble
+      - target: Roota
+      - target: RootaUI
+    settings:
+      base:
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Roota-Demo.app/Roota-Demo"
+schemes:
+  Roota-Demo:
+    build:
+      targets:
+        Demo: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      gatherCoverageData: true
+      commandLineArguments:
+        "--test": true
+      coverageTargets:
+        - Roota
+        - RootaUI
+      targets:
+        - name: RootaTests
+        - name: RootaUITests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

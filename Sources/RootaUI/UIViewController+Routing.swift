@@ -1,10 +1,11 @@
 //
 //  UIViewController+Routing.swift
-//  
+//
 //
 //  Created by necocen on 2020/12/02.
 //
 
+#if canImport(UIKit)
 import UIKit
 import PromiseKit
 import Roota
@@ -63,3 +64,4 @@ public extension Screen where Self: UIViewController {
         return parent as? ScreenProtocol ?? presentingViewController as? ScreenProtocol
     }
 }
+#endif

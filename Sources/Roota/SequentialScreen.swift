@@ -1,6 +1,6 @@
 //
 //  SequentialScreen.swift
-//  
+//
 //
 //  Created by necocen on 2020/12/02.
 //

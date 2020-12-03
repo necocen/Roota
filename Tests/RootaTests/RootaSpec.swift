@@ -35,6 +35,7 @@ class RoutingSpec: QuickSpec {
             }
         }
     }
+
     class ViewControllerC1: ViewController, Screen {
         class Routing: ScreenRouting<ViewControllerC1> {
             override func screen() -> ViewControllerC1 {
@@ -42,6 +43,7 @@ class RoutingSpec: QuickSpec {
             }
         }
     }
+
     class ViewControllerC2: ViewController, Screen {
         class Routing: ScreenRouting<ViewControllerC2> {
             override func screen() -> ViewControllerC2 {

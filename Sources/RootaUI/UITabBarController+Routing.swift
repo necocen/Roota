@@ -1,10 +1,11 @@
 //
 //  UITabBarController+Routing.swift
-//  
+//
 //
 //  Created by necocen on 2020/12/02.
 //
 
+#if canImport(UIKit)
 import UIKit
 import PromiseKit
 import Roota
@@ -29,3 +30,4 @@ public extension SwitchingScreen where Self: UITabBarController {
         return vc!
     }
 }
+#endif

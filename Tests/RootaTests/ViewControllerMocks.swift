@@ -1,6 +1,6 @@
 //
 //  ViewControllerMocks.swift
-//  
+//
 //
 //  Created by necocen on 2020/12/02.
 //
@@ -41,7 +41,7 @@ class NavigationController: ViewController {
     init(rootViewController: ViewController) {
         super.init()
         rootViewController.navigationController = self
-        viewControllers = [rootViewController]
+        self.viewControllers = [rootViewController]
         children = [rootViewController]
     }
 }
@@ -54,6 +54,7 @@ extension Screen where Self: ViewController {
             _routing = newValue
         }
     }
+
     var presentedScreen: ScreenProtocol? {
         return presentedViewController as? ScreenProtocol
     }

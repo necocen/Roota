@@ -1,10 +1,11 @@
 //
 //  UINavigationController+Routing.swift
-//  
+//
 //
 //  Created by necocen on 2020/12/02.
 //
 
+#if canImport(UIKit)
 import UIKit
 import PromiseKit
 import Roota
@@ -36,7 +37,7 @@ extension UINavigationController {
         pushViewController(viewController, animated: animated)
         guard let coordinator = transitionCoordinator, animated else {
             // 一度asyncしないとviewControllersが正しい状態にならない
-            return Guarantee { seal in DispatchQueue.main.async {  seal(()) } }
+            return Guarantee { seal in DispatchQueue.main.async { seal(()) } }
         }
         return Guarantee<Void> { seal in coordinator.animate(alongsideTransition: nil, completion: { _ in seal(()) }) }
     }
@@ -52,3 +53,4 @@ extension UINavigationController {
         }
     }
 }
+#endif
