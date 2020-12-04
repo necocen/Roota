@@ -60,7 +60,7 @@ public extension SwitchingScreen {
         case .present: // 自分が直接presentする場合は出す
             let vc = child.anyInstantiate()
             Roota.log("Present \(type(of: vc))")
-            return dismissal.then { _ in self.presentScreen(vc, animated: false) }.then { _ in
+            return dismissal.then { _ in self.presentScreen(vc, animated: true) }.then { _ in
                 vc.handleRouting(routing)
             }
         case .switch: // タブ切り換え
