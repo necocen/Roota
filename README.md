@@ -57,3 +57,6 @@ rootViewController.route(to: \.modal).then { modal -> Guarantee<GrandchildViewCo
     return modal.route(to: \.grandchild)
 }
 ```
+
+## Demo
+You can get demo project by using XcodeGen. Demo project contains simple iOS app and test targets.

@@ -96,17 +96,20 @@ class RouteBackSpec: QuickSpec {
         let param: Int
         init(param: Int) {
             self.param = param
-            super.init()
+            super.init(nibName: nil, bundle: nil)
         }
+
+        @available(*, unavailable)
+        required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     }
 
-    class NavigationController: RootaTests.NavigationController, SequentialScreen {
-        class Routing: ScreenRouting<NavigationController> {
+    class NavigationControllerA: NavigationController, SequentialScreen {
+        class Routing: ScreenRouting<NavigationControllerA> {
             @Route(.root) var a: ViewControllerA.Routing
             @Route(.present) var modal: ViewControllerM.Routing
 
-            override func screen() -> NavigationController {
-                NavigationController(rootViewController: a.instantiate())
+            override func screen() -> NavigationControllerA {
+                NavigationControllerA(rootViewController: a.instantiate())
             }
         }
     }
@@ -116,6 +119,7 @@ class RouteBackSpec: QuickSpec {
             var vc: ViewControllerD!
             beforeEach {
                 vc = ViewControllerD.asRootScreen()
+                setupWindow(vc)
             }
 
             it("dismisses presented ViewController") {
@@ -133,9 +137,10 @@ class RouteBackSpec: QuickSpec {
         }
 
         describe("UINavigationController") {
-            var navCon: NavigationController!
+            var navCon: NavigationControllerA!
             beforeEach {
-                navCon = NavigationController.asRootScreen()
+                navCon = NavigationControllerA.asRootScreen()
+                setupWindow(navCon)
             }
 
             it("push/popを正しくハンドルすること") {
@@ -192,18 +197,18 @@ class RouteBackSpec: QuickSpec {
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerB1.self))
                         expect(navCon.viewControllers[2]).to(beAnInstanceOf(ViewControllerC1.self))
-                        return c1.route(from: NavigationController.self, to: \.a.b2)
+                        return c1.route(from: NavigationControllerA.self, to: \.a.b2)
                     }.then { b2 -> Guarantee<ViewControllerC1> in
                         expect(navCon.viewControllers.count).to(equal(1))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.presentedViewController).to(beAnInstanceOf(ViewControllerB2.self))
-                        return b2.route(from: NavigationController.self, to: \.a.b1.c1)
+                        return b2.route(from: NavigationControllerA.self, to: \.a.b1.c1)
                     }.then { c1 -> Guarantee<ViewControllerA> in
                         expect(navCon.viewControllers.count).to(equal(3))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerB1.self))
                         expect(navCon.viewControllers[2]).to(beAnInstanceOf(ViewControllerC1.self))
-                        return c1.route(from: NavigationController.self, to: \.a)
+                        return c1.route(from: NavigationControllerA.self, to: \.a)
                     }.done { _ in
                         expect(navCon.viewControllers.count).to(equal(1))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))

@@ -34,6 +34,9 @@ class ViewController {
             presentedViewController.presentingViewController = nil
         }
     }
+
+    init() {}
+    init(nibName: String?, bundle: Bundle?) {}
 }
 
 class NavigationController: ViewController {
@@ -118,4 +121,8 @@ extension SequentialScreen where Self: NavigationController {
             if self.viewControllers.isEmpty { fatalError("Inconsistent pop") }
         }
     }
+}
+
+func setupWindow(_ root: ViewController) {
+    // Do Nothing
 }

@@ -68,6 +68,9 @@ targets:
     platform: iOS
     sources:
       - Tests/RootaUITests
+      - path: Tests/RootaTests
+        excludes:
+          - ViewControllerMocks.swift
     dependencies:
       - package: Quick
       - package: Nimble

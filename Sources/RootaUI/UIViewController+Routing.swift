@@ -30,22 +30,18 @@ public extension Screen where Self: UIViewController {
 
     func presentScreen(_ screen: ScreenProtocol, animated: Bool) -> Guarantee<Void> {
         if let vc = screen as? UIViewController {
-            present(vc, animated: animated)
-            guard let coordinator = transitionCoordinator, animated else {
-                return Guarantee { seal in DispatchQueue.main.async { seal(()) } }
+            return Guarantee<Void> { seal in
+                self.present(vc, animated: animated) { seal(()) }
             }
-            return Guarantee<Void> { seal in coordinator.animate(alongsideTransition: nil, completion: { _ in seal(()) }) }
         } else {
             fatalError()
         }
     }
 
     func dismissScreen(animated: Bool) -> Guarantee<Void> {
-        dismiss(animated: false)
-        guard let coordinator = transitionCoordinator, animated else {
-            return Guarantee { seal in DispatchQueue.main.async { seal(()) } }
+        Guarantee<Void> { seal in
+            self.dismiss(animated: animated) { seal(()) }
         }
-        return Guarantee<Void> { seal in coordinator.animate(alongsideTransition: nil, completion: { _ in seal(()) }) }
     }
 
     var presentedScreen: ScreenProtocol? {
