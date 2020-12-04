@@ -29,7 +29,7 @@ public extension SequentialScreen {
             } else {
                 Roota.log("Do nothing")
                 // swiftlint:disable:next force_cast
-                return .value(routing as! Routing.Screen)
+                return .value(self as! Routing.Screen)
             }
         } else if !self.routing.isEquivalentToOrAncestor(of: routing) {
             if self.routing.hasCommonAncestor(with: routing) {
