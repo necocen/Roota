@@ -32,7 +32,7 @@ public extension SequentialScreen {
             if presentedScreen != nil {
                 Roota.log("Dismiss presentedScreen \(type(of: presentedScreen!))")
                 // swiftlint:disable:next force_cast
-                return dismissScreen(animated: false).map { _ in self as! Routing.Screen }
+                return dismissScreen(animated: true).map { _ in self as! Routing.Screen }
             } else {
                 Roota.log("Do nothing")
                 // swiftlint:disable:next force_cast
@@ -58,7 +58,7 @@ public extension SequentialScreen {
         } else if presentedScreen != nil {
             // モーダルは出ているがrouterを処理できない場合、まず閉じる
             Roota.log("Dismiss presentedScreen \(type(of: presentedScreen!))")
-            dismissal = dismissScreen(animated: false)
+            dismissal = dismissScreen(animated: true)
         } else {
             dismissal = .value
         }
@@ -69,7 +69,7 @@ public extension SequentialScreen {
             if child.type == .present {
                 let vc = child.anyInstantiate()
                 Roota.log("Present \(type(of: vc))")
-                return dismissal.then { _ in self.presentScreen(vc, animated: false) }.then { _ in
+                return dismissal.then { _ in self.presentScreen(vc, animated: true) }.then { _ in
                     vc.handleRouting(routing)
                 }
             }

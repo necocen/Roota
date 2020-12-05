@@ -155,7 +155,7 @@ public extension Screen {
         } else if presentedScreen != nil {
             // モーダルは出ているがrouterを処理できない場合、まず閉じる
             Roota.log("Dismiss presentedScreen \(type(of: presentedScreen!))")
-            dismissal = dismissScreen(animated: false)
+            dismissal = dismissScreen(animated: true)
         } else {
             dismissal = .value
         }
@@ -179,7 +179,7 @@ public extension Screen {
         case .present:
             let screen = child.anyInstantiate()
             Roota.log("Present \(type(of: screen))")
-            return dismissal.then { _ in self.presentScreen(screen, animated: false) }.then { _ in
+            return dismissal.then { _ in self.presentScreen(screen, animated: true) }.then { _ in
                 return screen.handleRouting(routing)
             }
         case .embed:

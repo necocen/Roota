@@ -24,7 +24,7 @@ public extension SwitchingScreen {
             if presentedScreen != nil {
                 Roota.log("Dismiss presentedScreen \(type(of: presentedScreen!))")
                 // swiftlint:disable:next force_cast
-                return dismissScreen(animated: false).map { _ in self as! Routing.Screen }
+                return dismissScreen(animated: true).map { _ in self as! Routing.Screen }
             } else {
                 Roota.log("Do nothing")
                 // swiftlint:disable:next force_cast
