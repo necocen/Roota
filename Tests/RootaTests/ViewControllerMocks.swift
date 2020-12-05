@@ -41,7 +41,7 @@ class ViewController {
 
 class NavigationController: ViewController {
     fileprivate(set) var viewControllers: [ViewController] = []
-    init(rootViewController: ViewController) {
+    required init(rootViewController: ViewController) {
         super.init()
         rootViewController.navigationController = self
         self.viewControllers = [rootViewController]
@@ -88,7 +88,7 @@ extension Screen where Self: ViewController {
 
 }
 
-extension SequentialScreen where Self: NavigationController {
+extension SequentialScreen where Self: NavigationController, RootScreen: ViewController {
     var screens: [ScreenProtocol] {
         return viewControllers.compactMap { $0 as? ScreenProtocol }
     }
@@ -121,6 +121,11 @@ extension SequentialScreen where Self: NavigationController {
             if self.viewControllers.isEmpty { fatalError("Inconsistent pop") }
         }
     }
+
+    init(rootScreen: RootScreen) {
+        self.init(rootViewController: rootScreen)
+    }
+
 }
 
 func setupWindow(_ root: ViewController) {

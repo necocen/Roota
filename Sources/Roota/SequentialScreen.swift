@@ -14,7 +14,10 @@ public protocol SequentialScreenProtocol: ScreenProtocol {
     var screens: [ScreenProtocol] { get }
 }
 
-public protocol SequentialScreen: Screen, SequentialScreenProtocol {}
+public protocol SequentialScreen: Screen, SequentialScreenProtocol {
+    associatedtype RootScreen: Screen
+    init(rootScreen: RootScreen)
+}
 
 public extension SequentialScreen {
     func handleRouting<Routing: ScreenRoutingProtocol>(_ routing: Routing) -> Guarantee<Routing.Screen> {

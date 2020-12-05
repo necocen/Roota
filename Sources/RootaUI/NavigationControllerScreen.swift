@@ -10,12 +10,13 @@ import UIKit
 import Roota
 
 // swiftlint:disable:next line_length
-public class NavigationControllerScreen<Root: Screen & UIViewController>: UINavigationController, SequentialScreen where Root.Routing: ScreenRouting<Root> {
-    public class Routing: ScreenRouting<NavigationControllerScreen> {
-        @Route(.root) var root: Root.Routing
+public class NavigationControllerScreen<RootScreen: Screen & UIViewController>: UINavigationController, SequentialScreen where RootScreen.Routing: ScreenRouting<RootScreen> {
 
-        override public func screen() -> NavigationControllerScreen<Root> {
-            return NavigationControllerScreen(rootViewController: root.instantiate())
+    public class Routing: ScreenRouting<NavigationControllerScreen> {
+        @Route(.root) var root: RootScreen.Routing
+
+        override public func screen() -> NavigationControllerScreen<RootScreen> {
+            return NavigationControllerScreen(rootScreen: root.instantiate())
         }
     }
 }

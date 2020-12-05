@@ -10,7 +10,7 @@ import UIKit
 import PromiseKit
 import Roota
 
-public extension SequentialScreen where Self: UINavigationController {
+public extension SequentialScreen where Self: UINavigationController, RootScreen: UIViewController {
     func push(_ screen: ScreenProtocol) -> Guarantee<Void> {
         if let vc = screen as? UIViewController {
             return guaranteePushViewController(vc, animated: true)
@@ -33,6 +33,10 @@ public extension SequentialScreen where Self: UINavigationController {
 
     var screens: [ScreenProtocol] {
         return viewControllers.compactMap { $0 as? ScreenProtocol }
+    }
+
+    init(rootScreen: RootScreen) {
+        self.init(rootViewController: rootScreen)
     }
 }
 

@@ -97,6 +97,7 @@ class RoutingSpec: QuickSpec {
     }
 
     class NavigationControllerA: NavigationController, SequentialScreen {
+        typealias RootScreen = ViewControllerA
         class Routing: ScreenRouting<NavigationControllerA> {
             @Route(.root) var a: ViewControllerA.Routing
             @Route(.present) var modal: ViewControllerM.Routing
