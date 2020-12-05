@@ -14,9 +14,13 @@ public protocol SequentialScreenProtocol: ScreenProtocol {
     var screens: [ScreenProtocol] { get }
 }
 
-public protocol SequentialScreen: Screen, SequentialScreenProtocol {
+public protocol SequentialScreen: Screen, SequentialScreenProtocol where Routing: SequentialScreenRoutingProtocol {
     associatedtype RootScreen: Screen
     init(rootScreen: RootScreen)
+}
+
+public protocol SequentialScreenRoutingProtocol: ScreenRoutingProtocol where Screen: SequentialScreen {
+    var root: Screen.RootScreen.Routing { get }
 }
 
 public extension SequentialScreen {
