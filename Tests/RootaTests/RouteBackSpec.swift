@@ -77,12 +77,20 @@ class RouteBackSpec: QuickSpec {
 
     class NavigationControllerA: NavigationController, SequentialScreen {
         typealias RootScreen = ViewControllerA
-        class Routing: ScreenRouting<NavigationControllerA> {
-            @Route(.root) var a: ViewControllerA.Routing
+
+        override required init(rootViewController: ViewController) {
+            super.init(rootViewController: rootViewController)
+        }
+
+        @available(*, unavailable)
+        required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+        class Routing: ScreenRouting<NavigationControllerA>, SequentialScreenRoutingProtocol {
+            @Route(.root) var root: RootScreen.Routing
             @Route(.present) var modal: ViewControllerM.Routing
 
             override func screen() -> NavigationControllerA {
-                NavigationControllerA(rootViewController: a.instantiate())
+                NavigationControllerA(rootScreen: root.instantiate())
             }
         }
     }
@@ -134,7 +142,7 @@ class RouteBackSpec: QuickSpec {
 
                 it("pop to previous screen") {
                     waitUntil(timeout: .seconds(10)) { done in
-                        navCon.route(to: \.a.b1.c1).then { c1 -> Guarantee<ScreenProtocol> in
+                        navCon.route(to: \.root.b1.c1).then { c1 -> Guarantee<ScreenProtocol> in
                             c1.routeBack()
                         }.then { s -> Guarantee<ScreenProtocol> in
                             expect(navCon.screens.last).to(beAnInstanceOf(ViewControllerB1.self))
@@ -158,7 +166,7 @@ class RouteBackSpec: QuickSpec {
 
                 it("dismisses when on root page") {
                     waitUntil(timeout: .seconds(10)) { done in
-                        vc.route(to: \.nav.a.b1).then { b1 in b1.routeBack() }.then { a in a.routeBack() }.done { vc in
+                        vc.route(to: \.nav.root.b1).then { b1 in b1.routeBack() }.then { a in a.routeBack() }.done { vc in
                             expect(vc).to(beAnInstanceOf(ViewControllerE.self))
                             expect(vc.presentedScreen).to(beNil())
                             done()

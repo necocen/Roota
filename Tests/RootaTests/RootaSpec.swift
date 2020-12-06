@@ -98,12 +98,22 @@ class RoutingSpec: QuickSpec {
 
     class NavigationControllerA: NavigationController, SequentialScreen {
         typealias RootScreen = ViewControllerA
-        class Routing: ScreenRouting<NavigationControllerA> {
-            @Route(.root) var a: ViewControllerA.Routing
+
+        @available(*, unavailable)
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override required init(rootViewController: ViewController) {
+            super.init(rootViewController: rootViewController)
+        }
+
+        class Routing: ScreenRouting<NavigationControllerA>, SequentialScreenRoutingProtocol {
+            @Route(.root) var root: ViewControllerA.Routing
             @Route(.present) var modal: ViewControllerM.Routing
 
             override func screen() -> NavigationControllerA {
-                NavigationControllerA(rootViewController: a.instantiate())
+                NavigationControllerA(rootScreen: root.instantiate())
             }
         }
     }
@@ -140,7 +150,7 @@ class RoutingSpec: QuickSpec {
 
             it("push/popを正しくハンドルすること") {
                 waitUntil(timeout: .seconds(10)) { done in
-                    navCon.route(to: \.a.b1).then { b1 -> Guarantee<ViewControllerC1> in
+                    navCon.route(to: \.root.b1).then { b1 -> Guarantee<ViewControllerC1> in
                         expect(navCon.viewControllers.count).to(equal(2))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerB1.self))
@@ -150,28 +160,28 @@ class RoutingSpec: QuickSpec {
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerB1.self))
                         expect(navCon.viewControllers[2]).to(beAnInstanceOf(ViewControllerC1.self))
-                        return navCon.route(to: \.a.b1)
+                        return navCon.route(to: \.root.b1)
                     }.then { _ -> Guarantee<ViewControllerA> in
                         expect(navCon.viewControllers.count).to(equal(2))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerB1.self))
-                        return navCon.route(to: \.a)
+                        return navCon.route(to: \.root)
                     }.then { _ -> Guarantee<ViewControllerC1> in
                         expect(navCon.viewControllers.count).to(equal(1))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
-                        return navCon.route(to: \.a.b1.c1)
+                        return navCon.route(to: \.root.b1.c1)
                     }.then { _ -> Guarantee<ViewControllerC2> in
                         expect(navCon.viewControllers.count).to(equal(3))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerB1.self))
                         expect(navCon.viewControllers[2]).to(beAnInstanceOf(ViewControllerC1.self))
-                        return navCon.route(to: \.a.b1.c2)
+                        return navCon.route(to: \.root.b1.c2)
                     }.then { _ -> Guarantee<ViewControllerA> in
                         expect(navCon.viewControllers.count).to(equal(3))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerB1.self))
                         expect(navCon.viewControllers[2]).to(beAnInstanceOf(ViewControllerC2.self))
-                        return navCon.route(to: \.a)
+                        return navCon.route(to: \.root)
                     }.done { _ in
                         expect(navCon.viewControllers.count).to(equal(1))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
@@ -182,7 +192,7 @@ class RoutingSpec: QuickSpec {
 
             it("push/popとpresent/dismissを正しくハンドルすること") {
                 waitUntil(timeout: .seconds(10)) { done in
-                    navCon.route(to: \.a.b1).then { b1 -> Guarantee<ViewControllerC1> in
+                    navCon.route(to: \.root.b1).then { b1 -> Guarantee<ViewControllerC1> in
                         expect(navCon.viewControllers.count).to(equal(2))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerB1.self))
@@ -192,18 +202,18 @@ class RoutingSpec: QuickSpec {
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerB1.self))
                         expect(navCon.viewControllers[2]).to(beAnInstanceOf(ViewControllerC1.self))
-                        return c1.route(from: NavigationControllerA.self, to: \.a.b2)
+                        return c1.route(from: NavigationControllerA.self, to: \.root.b2)
                     }.then { b2 -> Guarantee<ViewControllerC1> in
                         expect(navCon.viewControllers.count).to(equal(1))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.presentedViewController).to(beAnInstanceOf(ViewControllerB2.self))
-                        return b2.route(from: NavigationControllerA.self, to: \.a.b1.c1)
+                        return b2.route(from: NavigationControllerA.self, to: \.root.b1.c1)
                     }.then { c1 -> Guarantee<ViewControllerA> in
                         expect(navCon.viewControllers.count).to(equal(3))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerB1.self))
                         expect(navCon.viewControllers[2]).to(beAnInstanceOf(ViewControllerC1.self))
-                        return c1.route(from: NavigationControllerA.self, to: \.a)
+                        return c1.route(from: NavigationControllerA.self, to: \.root)
                     }.done { _ in
                         expect(navCon.viewControllers.count).to(equal(1))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
@@ -214,14 +224,14 @@ class RoutingSpec: QuickSpec {
 
             it("直接モーダルをpresentできること") {
                 waitUntil(timeout: .seconds(10)) { done in
-                    navCon.route(to: \.a.b1).then { _ -> Guarantee<ViewControllerM> in
+                    navCon.route(to: \.root.b1).then { _ -> Guarantee<ViewControllerM> in
                         expect(navCon.viewControllers.count).to(equal(2))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                         expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerB1.self))
                         return navCon.route(to: \.modal)
                     }.then { _ -> Guarantee<ViewControllerC1> in
                         expect(navCon.presentedViewController).to(beAnInstanceOf(ViewControllerM.self))
-                        return navCon.route(to: \.a.b1.c1)
+                        return navCon.route(to: \.root.b1.c1)
                     }.done { _ in
                         expect(navCon.viewControllers.count).to(equal(3))
                         expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
@@ -235,39 +245,39 @@ class RoutingSpec: QuickSpec {
             context("ViewControllerにパラメータがあるとき") {
                 it("パラメータが同じ場合は同じ画面と判定すること") {
                     waitUntil(timeout: .seconds(10)) { done in
-                        navCon.route(to: \.a.p, with: \.param, 1).then { _ -> Guarantee<ViewControllerM> in
+                        navCon.route(to: \.root.p, with: \.param, 1).then { _ -> Guarantee<ViewControllerM> in
                             expect(navCon.viewControllers.count).to(equal(2))
                             expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                             expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerP.self))
                             expect((navCon.viewControllers[1] as! ViewControllerP).param).to(equal(1))
-                            return navCon.route(to: navCon.descendant(\.a.p).with(\.param, is: 1).modal)
+                            return navCon.route(to: navCon.descendant(\.root.p).with(\.param, is: 1).modal)
                         }.then { _ -> Guarantee<ViewControllerM> in
                             expect(navCon.viewControllers.count).to(equal(2))
                             expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                             expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerP.self))
                             expect((navCon.viewControllers[1] as! ViewControllerP).param).to(equal(1))
                             expect(navCon.presentedViewController).to(beAnInstanceOf(ViewControllerM.self))
-                            return navCon.route(to: navCon.descendant(\.a.p).with(\.param, is: 2).modal)
+                            return navCon.route(to: navCon.descendant(\.root.p).with(\.param, is: 2).modal)
                         }.then { _ -> Guarantee<ViewControllerP> in
                             expect(navCon.viewControllers.count).to(equal(2))
                             expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                             expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerP.self))
                             expect((navCon.viewControllers[1] as! ViewControllerP).param).to(equal(2))
                             expect(navCon.presentedViewController).to(beAnInstanceOf(ViewControllerM.self))
-                            return navCon.route(to: \.a.p, with: \.param, 3)
+                            return navCon.route(to: \.root.p, with: \.param, 3)
                         }.then { _ -> Guarantee<ViewControllerD> in
                             expect(navCon.viewControllers.count).to(equal(2))
                             expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                             expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerP.self))
                             expect((navCon.viewControllers[1] as! ViewControllerP).param).to(equal(3))
-                            return navCon.route(to: navCon.descendant(\.a.p).with(\.param, is: 4).d)
+                            return navCon.route(to: navCon.descendant(\.root.p).with(\.param, is: 4).d)
                         }.then { _ -> Guarantee<ViewControllerD> in
                             expect(navCon.viewControllers.count).to(equal(3))
                             expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                             expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerP.self))
                             expect(navCon.viewControllers[2]).to(beAnInstanceOf(ViewControllerD.self))
                             expect((navCon.viewControllers[1] as! ViewControllerP).param).to(equal(4))
-                            return navCon.route(to: navCon.descendant(\.a.p).with(\.param, is: 5).d)
+                            return navCon.route(to: navCon.descendant(\.root.p).with(\.param, is: 5).d)
                         }.done { _ in
                             expect(navCon.viewControllers.count).to(equal(3))
                             expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
@@ -281,12 +291,12 @@ class RoutingSpec: QuickSpec {
 
                 it("別パラメータの同一ViewControllerに遷移できること") {
                     waitUntil(timeout: .seconds(10)) { done in
-                        navCon.route(to: \.a.p, with: \.param, 1).then { _ -> Guarantee<ViewControllerP> in
+                        navCon.route(to: \.root.p, with: \.param, 1).then { _ -> Guarantee<ViewControllerP> in
                             expect(navCon.viewControllers.count).to(equal(2))
                             expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
                             expect(navCon.viewControllers[1]).to(beAnInstanceOf(ViewControllerP.self))
                             expect((navCon.viewControllers[1] as! ViewControllerP).param).to(equal(1))
-                            return navCon.route(to: navCon.descendant(\.a.p).with(\.param, is: 1).p.with(\.param, is: 2))
+                            return navCon.route(to: navCon.descendant(\.root.p).with(\.param, is: 1).p.with(\.param, is: 2))
                         }.then { _ -> Guarantee<ViewControllerP> in
                             expect(navCon.viewControllers.count).to(equal(3))
                             expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
@@ -294,7 +304,7 @@ class RoutingSpec: QuickSpec {
                             expect(navCon.viewControllers[2]).to(beAnInstanceOf(ViewControllerP.self))
                             expect((navCon.viewControllers[1] as! ViewControllerP).param).to(equal(1))
                             expect((navCon.viewControllers[2] as! ViewControllerP).param).to(equal(2))
-                            return navCon.route(to: navCon.descendant(\.a.p).with(\.param, is: 3).p.with(\.param, is: 2))
+                            return navCon.route(to: navCon.descendant(\.root.p).with(\.param, is: 3).p.with(\.param, is: 2))
                         }.done { _ in
                             expect(navCon.viewControllers.count).to(equal(3))
                             expect(navCon.viewControllers[0]).to(beAnInstanceOf(ViewControllerA.self))
