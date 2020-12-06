@@ -8,7 +8,7 @@
 import PromiseKit
 
 public protocol SwitchingScreenProtocol: ScreenProtocol {
-    func move(to screen: ScreenProtocol) -> Guarantee<Void>
+    @discardableResult func move(to screen: ScreenProtocol) -> Guarantee<Void>
     func child(for routing: RoutingProtocol) -> ScreenProtocol
     var currentScreen: ScreenProtocol { get }
 }

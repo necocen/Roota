@@ -11,7 +11,7 @@ import PromiseKit
 import Roota
 
 public extension SequentialScreen where Self: UINavigationController, RootScreen: UIViewController {
-    func push(_ screen: ScreenProtocol) -> Guarantee<Void> {
+    @discardableResult func push(_ screen: ScreenProtocol) -> Guarantee<Void> {
         if let vc = screen as? UIViewController {
             return guaranteePushViewController(vc, animated: true)
         } else {
@@ -19,7 +19,7 @@ public extension SequentialScreen where Self: UINavigationController, RootScreen
         }
     }
 
-    func pop(to screen: ScreenProtocol) -> Guarantee<Void> {
+    @discardableResult func pop(to screen: ScreenProtocol) -> Guarantee<Void> {
         if let vc = screen as? UIViewController {
             return guaranteePopToViewController(vc, animated: true)
         } else {
@@ -27,7 +27,7 @@ public extension SequentialScreen where Self: UINavigationController, RootScreen
         }
     }
 
-    func pop() -> Guarantee<Void> {
+    @discardableResult func pop() -> Guarantee<Void> {
         return guaranteePopViewController(animated: true)
     }
 

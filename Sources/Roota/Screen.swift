@@ -9,10 +9,10 @@ import PromiseKit
 
 public protocol ScreenProtocol: class {
     func handleRouting<Routing: ScreenRoutingProtocol>(_ routing: Routing) -> Guarantee<Routing.Screen>
-    func routeBack() -> Guarantee<ScreenProtocol>
+    @discardableResult func routeBack() -> Guarantee<ScreenProtocol>
     func anyRouting() -> RoutingProtocol
-    func presentScreen(_ screen: ScreenProtocol, animated: Bool) -> Guarantee<Void>
-    func dismissScreen(animated: Bool) -> Guarantee<Void>
+    @discardableResult func presentScreen(_ screen: ScreenProtocol, animated: Bool) -> Guarantee<Void>
+    @discardableResult func dismissScreen(animated: Bool) -> Guarantee<Void>
     var presentedScreen: ScreenProtocol? { get }
     var navigationScreen: SequentialScreenProtocol? { get }
     var childScreens: [ScreenProtocol] { get }

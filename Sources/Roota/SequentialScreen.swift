@@ -8,9 +8,9 @@
 import PromiseKit
 
 public protocol SequentialScreenProtocol: ScreenProtocol {
-    func push(_ screen: ScreenProtocol) -> Guarantee<Void>
-    func pop() -> Guarantee<Void>
-    func pop(to screen: ScreenProtocol) -> Guarantee<Void>
+    @discardableResult func push(_ screen: ScreenProtocol) -> Guarantee<Void>
+    @discardableResult func pop() -> Guarantee<Void>
+    @discardableResult func pop(to screen: ScreenProtocol) -> Guarantee<Void>
     var screens: [ScreenProtocol] { get }
 }
 

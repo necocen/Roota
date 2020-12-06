@@ -28,7 +28,7 @@ public extension Screen where Self: UIViewController {
         }
     }
 
-    func presentScreen(_ screen: ScreenProtocol, animated: Bool) -> Guarantee<Void> {
+    @discardableResult func presentScreen(_ screen: ScreenProtocol, animated: Bool) -> Guarantee<Void> {
         if let vc = screen as? UIViewController {
             return Guarantee<Void> { seal in
                 self.present(vc, animated: animated) { seal(()) }
@@ -38,7 +38,7 @@ public extension Screen where Self: UIViewController {
         }
     }
 
-    func dismissScreen(animated: Bool) -> Guarantee<Void> {
+    @discardableResult func dismissScreen(animated: Bool) -> Guarantee<Void> {
         Guarantee<Void> { seal in
             self.dismiss(animated: animated) { seal(()) }
         }

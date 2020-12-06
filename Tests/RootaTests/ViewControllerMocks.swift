@@ -62,7 +62,7 @@ extension Screen where Self: ViewController {
         return presentedViewController as? ScreenProtocol
     }
 
-    func presentScreen(_ screen: ScreenProtocol, animated: Bool) -> Guarantee<Void> {
+    @discardableResult func presentScreen(_ screen: ScreenProtocol, animated: Bool) -> Guarantee<Void> {
         guard let viewController = screen as? ViewController else { fatalError("Not ViewController") }
         if let navigationController = navigationController {
             return navigationController.present(viewController, animated: animated)
@@ -70,7 +70,7 @@ extension Screen where Self: ViewController {
         return present(viewController, animated: animated)
     }
 
-    func dismissScreen(animated: Bool) -> Guarantee<Void> {
+    @discardableResult func dismissScreen(animated: Bool) -> Guarantee<Void> {
         return dismiss(animated: animated)
     }
 
@@ -93,7 +93,7 @@ extension SequentialScreen where Self: NavigationController, RootScreen: ViewCon
         return viewControllers.compactMap { $0 as? ScreenProtocol }
     }
 
-    func push(_ screen: ScreenProtocol) -> Guarantee<Void> {
+    @discardableResult func push(_ screen: ScreenProtocol) -> Guarantee<Void> {
         guard let viewController = screen as? ViewController else { fatalError("Not ViewController") }
         guard viewController.navigationController == nil else { fatalError("Inconsistent push") }
         return after(seconds: animationDuration).done { _ in
@@ -103,12 +103,12 @@ extension SequentialScreen where Self: NavigationController, RootScreen: ViewCon
         }
     }
 
-    func pop() -> Guarantee<Void> {
+    @discardableResult func pop() -> Guarantee<Void> {
         guard screens.count > 1 else { fatalError("Can't pop") }
         return pop(to: screens[screens.count - 2])
     }
 
-    func pop(to screen: ScreenProtocol) -> Guarantee<Void> {
+    @discardableResult func pop(to screen: ScreenProtocol) -> Guarantee<Void> {
         guard let viewController = screen as? ViewController else { fatalError("Not ViewController") }
         return after(seconds: animationDuration).done { _ in
             for vc in self.viewControllers.reversed() {

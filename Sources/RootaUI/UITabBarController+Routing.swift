@@ -11,7 +11,7 @@ import PromiseKit
 import Roota
 
 public extension SwitchingScreen where Self: UITabBarController {
-    func move(to screen: ScreenProtocol) -> Guarantee<Void> {
+    @discardableResult func move(to screen: ScreenProtocol) -> Guarantee<Void> {
         guard let vc = screen as? UIViewController else { fatalError() }
         guard let index = viewControllers?.firstIndex(of: vc) else { fatalError() }
         return Guarantee<Void> { seal in
