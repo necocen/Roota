@@ -7,7 +7,7 @@
 
 public typealias _Screen = Screen
 
-public protocol RoutingProtocol: class {
+public protocol RoutingProtocol: AnyObject {
     init()
     init(type: RoutingType, ancestors: [RoutingProtocol])
     var ancestors: [RoutingProtocol] { get }

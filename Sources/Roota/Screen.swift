@@ -7,7 +7,7 @@
 
 import PromiseKit
 
-public protocol ScreenProtocol: class {
+public protocol ScreenProtocol: AnyObject {
     func handleRouting<Routing: ScreenRoutingProtocol>(_ routing: Routing) -> Guarantee<Routing.Screen>
     @discardableResult func routeBack() -> Guarantee<ScreenProtocol>
     func anyRouting() -> RoutingProtocol
