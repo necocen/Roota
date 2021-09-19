@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(name: "Roota",
-                      platforms: [.iOS(.v8)],
+                      platforms: [.iOS(.v9)],
                       products: [
                           .library(name: "Roota", targets: ["Roota"]),
                           .library(name: "RootaUI", targets: ["RootaUI"])
